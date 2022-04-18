@@ -140,6 +140,30 @@ def updateRoom(request,pk):
         return redirect('home')
     context={'form':form,'topic':topics,'room':room}
     return render(request,'base/room_form.html',context)
+
+def report(request,pk):
+    room=Room.objects.get(id=pk)
+    form=RoomForm(instance=room)
+    topics=Topic.objects.all()
+    participants=room.participants.all()
+    if request.user not in participants:
+        return HttpResponse('you are not allowed here')
+
+    if request.method=='POST':
+        topic_name=request.POST.get('topic')
+        topic,craeted=Topic.objects.get_or_create(name=topic_name)
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description')
+        )
+        
+        return redirect('home')
+    context={'form':form,'topic':topics,'room':room}
+    return render(request,'base/report.html',context)
+
+
 @login_required(login_url='login')    
 def deleteRoom(request,pk):
     room=Room.objects.get(id=pk)
