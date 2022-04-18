@@ -10,7 +10,7 @@ from telnetlib import AUTHENTICATION
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from . models import Room,Topic,Message,User
+from . models import Room,Topic,Message,User,Report
 from .forms import RoomForm,UserForm,MyUserCreationForm
 from django.db.models import Q
 
@@ -152,7 +152,7 @@ def report(request,pk):
     if request.method=='POST':
         topic_name=request.POST.get('topic')
         topic,craeted=Topic.objects.get_or_create(name=topic_name)
-        Room.objects.create(
+        Report.objects.create(
             host=request.user,
             topic=topic,
             name=request.POST.get('name'),
