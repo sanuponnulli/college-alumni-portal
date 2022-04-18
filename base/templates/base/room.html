@@ -7,7 +7,7 @@
         <div class="room">
           <div class="room__top">
             <div class="room__topLeft">
-              <a href="{%url 'home'%}}">
+              <a href="{%url 'home'%}">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                   <title>arrow-left</title>
                   <path
@@ -88,6 +88,7 @@
                   <span>@{{room.host.username}}</span>
                 </a>
               </div>
+              <a href="{%url 'report-room' room.id%}"><p>Report</p></a>
               <!-- <div class="room__details">
                 Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi, tenetur laudantium? Dicta repellendus
                 rerum consectetur, voluptatem repudiandae eum ea porro cupiditate provident nulla, deserunt, ab ipsum

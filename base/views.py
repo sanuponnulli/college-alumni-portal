@@ -10,7 +10,7 @@ from telnetlib import AUTHENTICATION
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from . models import Room,Topic,Message,User
+from . models import Room,Topic,Message,User,Report
 from .forms import RoomForm,UserForm,MyUserCreationForm
 from django.db.models import Q
 
@@ -74,7 +74,7 @@ def home(request):
     room_messages=Message.objects.filter(Q(room__topic__name__icontains=q))
     context={'rooms':rooms,'topics':topics,'room_count':room_count,'room_messages':room_messages}
     return render(request,'base/home.html',context)
-
+@login_required(login_url='login')
 def room(request,pk):
     room=Room.objects.get(id=pk)
     room_messages=room.message_set.all().order_by('-created')
@@ -140,6 +140,30 @@ def updateRoom(request,pk):
         return redirect('home')
     context={'form':form,'topic':topics,'room':room}
     return render(request,'base/room_form.html',context)
+
+def report(request,pk):
+    room=Room.objects.get(id=pk)
+    form=RoomForm(instance=room)
+    topics=Topic.objects.all()
+    participants=room.participants.all()
+    if request.user not in participants:
+        return HttpResponse('you are not allowed here')
+
+    if request.method=='POST':
+        topic_name=request.POST.get('topic')
+        topic,craeted=Topic.objects.get_or_create(name=topic_name)
+        Report.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description')
+        )
+        
+        return redirect('home')
+    context={'form':form,'topic':topics,'room':room}
+    return render(request,'base/report.html',context)
+
+
 @login_required(login_url='login')    
 def deleteRoom(request,pk):
     room=Room.objects.get(id=pk)
